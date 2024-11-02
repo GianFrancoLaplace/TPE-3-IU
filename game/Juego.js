@@ -23,10 +23,30 @@ export class Juego {
     }
 
     dibujarInfo() {
+        let sizeClock = 0, sizeText = 0;
         this.ctx.fillStyle = "#FFFFFF";
         this.ctx.font = "24px Arial";
-        this.ctx.fillText(`Turno de ${this.turnoActual.nombre}`, 300, 30);
-        this.ctx.fillText("Tiempo: 121 segundos", 300, 580);
+
+        // Textos a dibujar
+        const turnoText = `Turno de ${this.turnoActual.nombre}`;
+        const tiempoText = "Tiempo: 121 segundos";
+
+        // Obtener medidas
+        const turnoWidth = this.ctx.measureText(turnoText).width;
+        const tiempoWidth = this.ctx.measureText(tiempoText).width;
+
+        // Calcular posiciones centradas
+        const turnoX = (this.width - turnoWidth) / 2;
+        const tiempoX = (this.width - tiempoWidth) / 2;
+
+        // Altura de la fuente (aproximada)
+        const lineHeight = 24; // Esto es aproximado basado en el tamaño de la fuente
+
+        const margin = 42;
+
+        // Dibujar textos centrados
+        this.ctx.fillText(turnoText, turnoX, lineHeight + margin); 
+        this.ctx.fillText(tiempoText, tiempoX, lineHeight * 2.5 + margin);
     }
 
     cambiarTurno() {
