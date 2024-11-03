@@ -22,7 +22,6 @@ export class Juego {
     }
 
     dibujar() {
-        this.tablero.dibujarTablero(this.ctx);
         this.tablero.dibujarHuecos(this.ctx);
         this.tablero.dibujarFlechas(this.ctx);
         this.jugador1.dibujarArea(this.ctx);
@@ -58,8 +57,17 @@ export class Juego {
         this.ctx.fillText(tiempoText, tiempoX, lineHeight * 2.5 + margin);
     }
 
+    actualizarTablero(ctx, posiciones) {
+        const columnaHover = this.tablero.obtenerColumnaDesdeMouse(posiciones);
+        this.tablero.dibujarHuecos(ctx, columnaHover);
+    }
+
     cambiarTurno() {
         this.turnoActual = this.turnoActual === this.jugador1 ? this.jugador2 : this.jugador1;
+    }
+
+    agregarFicha() {
+        return null;
     }
 }
 
