@@ -16,16 +16,17 @@ canvas.addEventListener('mousedown', (e) => { //detecta el click sobre el canvas
     const mouseX = getPosMouse(e).x;
     const mouseY = getPosMouse(e).y;
 
-    console.log(mouseX);
-    console.log(mouseY);
+    const columna = juego.tablero.obtenerColumnaDesdeMouse(mouseX);
 
+    // juego.actualizarTablero(ctx, columna);
+    juego.resaltar(ctx,columna);
 });
 
 canvas.addEventListener("mousemove", (event) => {
     const mousePos = getPosMouse(event);
     const columna = juego.tablero.obtenerColumnaDesdeMouse(mousePos.x);
 
-    juego.actualizarTablero(ctx, columna);
+    // juego.actualizarTablero(ctx, columna);
 });
 
 

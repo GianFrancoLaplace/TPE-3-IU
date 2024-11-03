@@ -62,6 +62,10 @@ export class Juego {
         this.tablero.dibujarHuecos(ctx, columnaHover);
     }
 
+    resaltar(ctx, columna) {
+        this.tablero.dibujarHuecos(ctx, columna)
+    }
+
     cambiarTurno() {
         this.turnoActual = this.turnoActual === this.jugador1 ? this.jugador2 : this.jugador1;
     }

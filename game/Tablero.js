@@ -19,53 +19,39 @@ export class Tablero {
     }
 
     dibujarHuecos(ctx, highlightCol) {
-        ctx.fillStyle = "#D9D9D9";
         for (let row = 0; row < this.rows; row++) {
-            
-            let colsSize = 0;
-            
-            if(this.cols % 2 == 0){
-                colsSize = this.cols/2
-            }else{
-                ctx.beginPath();
-                ctx.arc(this.x + this.width / 2, this.y + (row + 1) * (this.cellRadius * 2 + this.cellSpacingY), this.cellRadius, 0, Math.PI * 2);
-                ctx.fill();
-                ctx.closePath();
-                colsSize = (this.cols/2) - 0.5
-            }
-                    
-            
-            for(let col = 0; col < colsSize; col++){
-                let izqPosX = this.x + this.width / 2 - (col + 1) * (this.cellRadius * 2 + this.cellSpacingX);
-                let derPosX = this.x + this.width / 2 + (col + 1) * (this.cellRadius * 2 + this.cellSpacingX);
+            for (let col = 0; col < this.cols; col++) {
+                // Calcula las posiciones X para las columnas izquierda y derecha
+                // let PosX = this.x + col  * (this.cellRadius * 2 + this.cellSpacingX);
+                // let posY = this.y + row  * (this.cellRadius * 2 + this.cellSpacingY);
+
+                let PosX = this.desplazamientoX + col  * (this.cellRadius * 2 + this.cellSpacingX) + this.cellSpacingX*1.5;
+                let posY = this.desplazamientoY + row  * (this.cellRadius * 2 + this.cellSpacingX) + this.cellSpacingY;
     
-                let posY = this.y + (row + 1) * (this.cellRadius * 2 + this.cellSpacingY);
-    
-                if (col === highlightCol) {
-                    ctx.fillStyle = "#FFFF00"; // Color de resaltado
+                console.log("Mi columna es: ", highlightCol)
+
+                // Resalta las columnas izquierda o derecha si `highlightCol` coincide
+                if (highlightCol === col) {
+                    ctx.fillStyle = "#FFFF00";
                 } else {
                     ctx.fillStyle = "#D9D9D9";
                 }
-                // 
-                ctx.beginPath();
-                ctx.arc(izqPosX, posY, this.cellRadius, 0, Math.PI * 2);
-                ctx.fill();
-                ctx.closePath();
     
-                // 
+                // Dibuja el hueco en la posición izquierda
                 ctx.beginPath();
-                ctx.arc(derPosX, posY, this.cellRadius, 0, Math.PI * 2);
+                ctx.arc(PosX, posY, this.cellRadius, 0, Math.PI * 2);
                 ctx.fill();
                 ctx.closePath();
-
             }
         }
         this.dibujarEjes(ctx);
-    } 
+    }
+        
 
     obtenerColumnaDesdeMouse(x) {
         const columnaRelativa = (x - this.desplazamientoX - this.cellRadius) / (2 * this.cellRadius + this.cellSpacingX);
-        const columna = Math.floor(columnaRelativa);
+        const columna = Math.round(columnaRelativa);
+        console.log(columna);
         return (columna >= 0 && columna < this.cols) ? columna : -1;
     }
 
