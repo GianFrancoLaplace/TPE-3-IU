@@ -7,7 +7,7 @@ export class Juego {
         this.width = width;
         this.height = height;
         this.nEnLinea = nEnLinea;
-        this.tablero = new Tablero(width, height, 6, 7, nEnLinea);
+        this.tablero = new Tablero(width, height, nEnLinea);
         
         // Variables de posición de jugadores
         let widthPlayer = 100;
@@ -91,10 +91,6 @@ export class Juego {
     }
     
     
-   
-    
-    
-
     cambiarTurno() {
         this.detenerCronometro(); // Detener el cronómetro del turno anterior
         this.turnoActual = this.turnoActual === this.jugador1 ? this.jugador2 : this.jugador1;
@@ -104,6 +100,10 @@ export class Juego {
     agregarFicha(ctx, columna) {
         this.tablero.agregarFicha(ctx, columna, this.turnoActual);
         this.cambiarTurno();
+    }
+
+    resaltar(ctx,columna){
+        this.tablero.dibujarHuecos(ctx,columna);
     }
 }
 
