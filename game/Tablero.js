@@ -27,7 +27,7 @@ export class Tablero {
                 let posY = this.desplazamientoY + row  * (this.cellRadius * 2 + this.cellSpacingX) + this.cellSpacingY;
 
                 // Resalta las columnas izquierda o derecha si `highlightCol` coincide
-                if (highlightCol === col) {
+                if (highlightCol === col && this.boardState[row][col] == null) {
                     ctx.fillStyle = "#FFFF00";
                 } else if (this.boardState[row][col] === 1) {
                     ctx.fillStyle = "#FF0000";  // Ficha de jugador 1
@@ -126,7 +126,6 @@ export class Tablero {
                 this.boardState[row][col] = turno.numero;
 
                 if(this.verificarGanador() != null){
-                    console.log(turno);
                     alert("Ganaste: " + turno.nombre);
                     this.reiniciarTablero(this.boardState);
                 }
@@ -145,7 +144,6 @@ export class Tablero {
     }
 
     verificarGanador(){
-        console.log(this.boardState);
         let horizontal = this.verificarGanadorHorizontal();
 
         if(horizontal!=null){
@@ -159,8 +157,6 @@ export class Tablero {
         }
 
         let diagonal = this.verificarGanadorDiagonal();
-        console.log(diagonal);
-
         
         if(diagonal!=null){
             return diagonal
@@ -225,13 +221,16 @@ export class Tablero {
             for (let col = 0; col <= this.cols - this.nEnLinea; col++) {
                 let cont = 1;
                 let huecoActual = this.boardState[row][col];
-                if (huecoActual === 0) continue;
-    
-                for (let k = 1; k < this.nEnLinea; k++) {
-                    if (this.boardState[row + k][col + k] === huecoActual) {
-                        cont++;
-                        if (cont === this.nEnLinea) return huecoActual;
-                    } else break;
+                let k = 1;
+                
+                while (huecoActual != null && k < this.nEnLinea && this.boardState[row + k][col + k] == huecoActual) {
+                    cont++;
+                    k++;
+                }
+                
+                if (cont >= this.nEnLinea) {
+                    console.log("Ganador encontrado (arriba-izquierda a abajo-derecha)");
+                    return huecoActual;
                 }
             }
         }
@@ -241,17 +240,20 @@ export class Tablero {
             for (let col = this.nEnLinea - 1; col < this.cols; col++) {
                 let cont = 1;
                 let huecoActual = this.boardState[row][col];
-                if (huecoActual === 0) continue;
-    
-                for (let k = 1; k < this.nEnLinea; k++) {
-                    if (this.boardState[row + k][col - k] === huecoActual) {
-                        cont++;
-                        if (cont === this.nEnLinea) return huecoActual;
-                    } else break;
+                let k = 1;
+                
+                while (huecoActual != null && k < this.nEnLinea && this.boardState[row + k][col - k] == huecoActual) {
+                    cont++;
+                    k++;
+                }
+                
+                if (cont >= this.nEnLinea) {
+                    console.log("Ganador encontrado (arriba-derecha a abajo-izquierda)");
+                    return huecoActual;
                 }
             }
         }
     
         return null; // No hay ganador
-    }    
+    }
 }
