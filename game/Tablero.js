@@ -4,48 +4,69 @@ export class Tablero {
     constructor(width, height, nEnLinea) {
         this.width = width / 2;
         this.height = height / 2;
-        // posiciones centradas = (width - widthDelafigura) /2
         this.x = (width - this.width) / 2;
         this.y = (height - this.height) / 2;
         this.rows = nEnLinea + 2;
         this.cols = nEnLinea + 3;
         this.nEnLinea = nEnLinea;
-        this.cellRadius = this.width / (this.cols * 4); // tamaño de la celda
-        this.cellSpacingX = this.cellRadius; // espacio entre celdas
-        this.cellSpacingY = this.cellRadius / 2
+        this.cellRadius = this.width / (this.cols * 4);
+        this.cellSpacingX = this.cellRadius;
+        this.cellSpacingY = this.cellRadius / 2;
         this.desplazamientoX = this.x + (this.width - (this.cols * (this.cellRadius * 2 + this.cellSpacingX))) / 2;
         this.desplazamientoY = this.y + (this.height - (this.rows * (this.cellRadius * 2 + this.cellSpacingY))) / 2;
 
-        // Inicializa el estado del tablero con todas las posiciones vacías (null)
         this.boardState = Array.from({ length: this.rows }, () => Array(this.cols).fill(null));
+
+        this.backgroundImage = new Image();
+        this.backgroundImage.src = "fondo.jpg";
+        this.backgroundImage.onload = () => {
+            this.backgroundLoaded = true;
+        };
     }
 
     dibujarHuecos(ctx, highlightCol) {
+        if (this.backgroundLoaded) {
+            const padding = 5;
+            ctx.drawImage(
+                this.backgroundImage,
+                this.x + padding,
+                this.y + padding,
+                this.width - padding * 2,
+                this.height - padding * 2
+            );
+        } else {
+            ctx.fillStyle = "#ADD8E6";
+            ctx.fillRect(this.x, this.y, this.width, this.height);
+        }
+
+        // Ajustamos los huecos un poco más abajo
+        const huecoDesplazamientoY = 10;
         for (let row = 0; row < this.rows; row++) {
             for (let col = 0; col < this.cols; col++) {
-                let PosX = this.desplazamientoX + col  * (this.cellRadius * 2 + this.cellSpacingX) + this.cellSpacingX*1.5;
-                let posY = this.desplazamientoY + row  * (this.cellRadius * 2 + this.cellSpacingX) + this.cellSpacingY;
+                let PosX = this.desplazamientoX + col * (this.cellRadius * 2 + this.cellSpacingX) + this.cellSpacingX * 1.5;
+                let posY = this.desplazamientoY + row * (this.cellRadius * 2 + this.cellSpacingY) + huecoDesplazamientoY;
 
-                // Resalta las columnas izquierda o derecha si `highlightCol` coincide
                 if (highlightCol === col && this.boardState[row][col] == null) {
                     ctx.fillStyle = "#FFFF00";
                 } else if (this.boardState[row][col] === 1) {
-                    ctx.fillStyle = "#FF0000";  // Ficha de jugador 1
-                } else if(this.boardState[row][col] === 2){
-                    ctx.fillStyle = "#0000FF";  // Ficha de jugador 1
-                }else {
+                    ctx.fillStyle = "#FF0000";
+                } else if (this.boardState[row][col] === 2) {
+                    ctx.fillStyle = "#0000FF";
+                } else {
                     ctx.fillStyle = "#D9D9D9";
                 }
-    
-                // Dibuja el hueco
+
                 ctx.beginPath();
                 ctx.arc(PosX, posY, this.cellRadius, 0, Math.PI * 2);
                 ctx.fill();
                 ctx.closePath();
             }
         }
+
         this.dibujarEjes(ctx);
     }
+
+
         
 
     obtenerColumnaDesdeMouse(x) {
@@ -73,16 +94,18 @@ export class Tablero {
         ctx.closePath();
     }
 
-    dibujarFlechas(ctx){
-        ctx.fillStyle = "#FFC107"
-        const arrowSize = this.cellRadius * 1.2; // Tamaño de la flecha
+    dibujarFlechas(ctx) {
+        ctx.fillStyle = "#FFC107";
+        const arrowSize = this.cellRadius * 1.2;
+        const flechaDesplazamientoY = 15; // Ajuste para que las flechas estén más arriba
         for (let col = 0; col < this.cols; col++) {
-            let posX = this.desplazamientoX + col  * (this.cellRadius * 2 + this.cellSpacingX) + this.cellSpacingX*1.5;
-            let posY = this.desplazamientoY - arrowSize * 2;
-    
-            ctx.moveTo(posX - arrowSize / 2 , posY);
-            ctx.lineTo(posX, posY + arrowSize); // Trazo horizontal
-            ctx.lineTo(posX + arrowSize / 2, posY); //trazo diagonal hacia abajo
+            let posX = this.desplazamientoX + col * (this.cellRadius * 2 + this.cellSpacingX) + this.cellSpacingX * 1.5;
+            let posY = this.desplazamientoY - arrowSize * 2 - flechaDesplazamientoY;
+
+            ctx.beginPath();
+            ctx.moveTo(posX - arrowSize / 2, posY);
+            ctx.lineTo(posX, posY + arrowSize);
+            ctx.lineTo(posX + arrowSize / 2, posY);
             ctx.fill();
             ctx.closePath();
         }
