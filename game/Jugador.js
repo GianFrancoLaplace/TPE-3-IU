@@ -1,5 +1,6 @@
 export class Jugador {
-    constructor(nombre, colorFicha, colorArea, posicionX, posicionY, widthArea, heightArea, sizeFicha) {
+    constructor(numero, nombre, colorFicha, colorArea, posicionX, posicionY, widthArea, heightArea, sizeFicha) {
+        this.numero = numero;
         this.nombre = nombre;
         this.colorFicha = colorFicha;
         this.colorArea = colorArea;

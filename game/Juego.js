@@ -2,12 +2,12 @@ import { Jugador } from "./Jugador.js";
 import { Tablero } from "./Tablero.js";
 
 export class Juego {    
-    constructor(ctx, width, height) {
+    constructor(ctx, width, height, nEnLinea) {
         this.ctx = ctx;
         this.width = width;
         this.height = height;
-        this.tablero = new Tablero(width, height);
-
+        this.nEnLinea = nEnLinea;
+        this.tablero = new Tablero(width, height, 6, 7, nEnLinea);
         // variables de pos de jugadores
         let widthPlayer = 100;
         let heightPlayer = 200;
@@ -15,9 +15,8 @@ export class Juego {
         let posXPlayer2 = width - (width / 20 + widthPlayer);
         let widthFicha = 25;
         let posYJugador = (this.tablero.y + this.tablero.height - heightPlayer) 
-
-        this.jugador1 = new Jugador("Player 1", "#F9A825", "#1565C0", posXPlayer1, posYJugador, widthPlayer, heightPlayer, widthFicha);
-        this.jugador2 = new Jugador("Player 2", "#29B6F6", "#039BE5", posXPlayer2, posYJugador, widthPlayer, heightPlayer, widthFicha);
+        this.jugador1 = new Jugador(1, "Player 1", "#F9A825", "#1565C0", posXPlayer1, posYJugador, widthPlayer, heightPlayer, widthFicha);
+        this.jugador2 = new Jugador(2, "Player 2", "#29B6F6", "#039BE5", posXPlayer2, posYJugador, widthPlayer, heightPlayer, widthFicha);
         this.turnoActual = this.jugador1;
     }
 
@@ -58,7 +57,6 @@ export class Juego {
     }
 
     actualizarTablero(ctx, posiciones) {
-        const columnaHover = this.tablero.obtenerColumnaDesdeMouse(posiciones);
         this.tablero.dibujarHuecos(ctx, columnaHover);
     }
 
@@ -70,8 +68,9 @@ export class Juego {
         this.turnoActual = this.turnoActual === this.jugador1 ? this.jugador2 : this.jugador1;
     }
 
-    agregarFicha() {
-        return null;
+    agregarFicha(ctx, columna) {
+        this.tablero.agregarFicha(ctx, columna, this.turnoActual);
+        this.cambiarTurno();
     }
 }
 
