@@ -163,6 +163,13 @@ h1, h2, h3, h4, h5,h6, p, a, span{
     width: 36px;
 }
 
+.container-button:hover button{
+    background-color: var(--color-secundario);
+    transform: scale(1.2);
+    transition: .3s ease;
+    cursor: pointer;
+}
+
 .container-button img {
     width: 22px;
     height: 22px;
@@ -1214,6 +1221,12 @@ h2.titulo-vj{
         margin: 0;
     }
 
+    a.breadcrums-link:hover{
+        color: var(--color-secundario);
+        transition: .3s ease;
+        font-size: .85rem;
+    }
+
     /* 4 en Línea */
 
     .tablero-div{
@@ -1738,5 +1751,11 @@ h2.titulo-vj{
 
     .footer-section li{
         font-size: 14px;
+    }
+
+    a.breadcrums-link:hover{
+        color: var(--color-secundario);
+        transition: .3s ease-in;
+        font-size: var(--font-size-m)
     }
 }
