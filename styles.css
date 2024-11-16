@@ -120,7 +120,7 @@ h1, h2, h3, h4, h5,h6, p, a, span{
     margin-bottom: 30px; /* Ajustar si se requiere menos espacio */
 }
 
-.tableroyanuncios-div{
+/* .tableroyanuncios-div{
     display: flex;
     width: 100%;
     justify-content: space-between;
@@ -130,7 +130,7 @@ h1, h2, h3, h4, h5,h6, p, a, span{
 .tablero-div {
     display: flex;
     justify-content: center;
-}
+} */
 
 .buttons-div{
     display: flex;
@@ -1229,10 +1229,10 @@ h2.titulo-vj{
 
     /* 4 en Línea */
 
-    .tablero-div{
+    /* .tablero-div{
         width: 100%;
         height: 100%;
-    }
+    } */
 
     .anuncio-div{
         display: none;
@@ -1649,13 +1649,13 @@ h2.titulo-vj{
     }
 
 
-    .tableroyanuncios-div{
+    /* .tableroyanuncios-div{
         align-items: center;
-    }
-
+    } */
+/* 
     .tablero-div img{
         width: 100%;
-    }
+    } */
 
     .anuncio-div {
         display: block;
@@ -1664,11 +1664,11 @@ h2.titulo-vj{
         margin: 0 16px;
     }
 
-    .anuncio-div img {
-        width: 100%; /* Las imágenes de los anuncios ocuparán todo el ancho del contenedor */
-        height: 100%; /* Forzar la imagen a estirarse para ocupar el 90% de la altura del tablero */
+    /* .anuncio-div img {
+        width: 100%;
+        height: 100%;
         object-fit: cover;
-    }
+    } */
 
     .buttons-div{
         position: relative;
@@ -1757,5 +1757,241 @@ h2.titulo-vj{
         color: var(--color-secundario);
         transition: .3s ease-in;
         font-size: var(--font-size-m)
+    }
+
+    /*------------------JUEGO-----------------------------*/
+
+    .pantalla{
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        background-color: #0A0B20;
+        border-radius: 15px;
+        width: 1362px;
+        height: 1000px;
+        margin-bottom: 40px;
+    }
+
+    #canvas{
+        display: flex;
+        margin: 17px 22px 0 22px;
+        background-image:   url(./img/city.jpg);
+        background-repeat: no-repeat;
+        background-size: cover;
+    }
+    #menu-container{
+        background-image: url(./img/bvs1.jpg);
+        background-repeat: no-repeat;
+        background-size: cover;
+        color: white;
+        width: 1300px;
+        height: 800px;
+        margin: 100px 22px 0 22px;
+        position: absolute;
+        top: 13.5%;
+        transition: all 400ms ease-out;
+    }
+    
+    .pantalla h1, .pantalla h2{
+        font-size:var(--font-size-l);
+
+        text-shadow: -2px 2px 0 #000,
+        2px 2px 0 #000,
+        2px -2px 0 #000,
+        -2px -2px 0 #000;
+    }
+
+    #menu-titulo{
+        color: #ffffff;
+        font-size: 2.5rem;
+    }
+
+    .pantalla h2{
+        font-size:var(--font-size-m);
+        
+    }
+
+    .menu-juego{
+        width: inherit;
+        height: inherit;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        position: absolute;
+        justify-content: space-around;
+        transition: all 400ms ease-in;
+    }
+    
+    #final, .control-juego, #empate{
+        display: none;
+        opacity: 0;
+        visibility: hidden;
+        color: white;
+    }
+    
+    .control-juego{
+        width: 180px;
+        justify-content: center;
+        padding: 1rem;
+        border-radius: 10%;
+        position: absolute;
+        justify-content: space-around;
+        align-items: center;
+    }
+    
+    .jugador{
+        width: fit-content;
+        background-color: rgb(0, 0, 0, 0);
+        top: 20%;
+        transition: all 400ms ease-in;
+        pointer-events: none;
+    }
+    
+    #jugador1{
+        left: 21%;
+        font-size: var(--font-size-l);
+    }
+    
+    #jugador2{
+        right: 21%;
+        font-size: var(--font-size-l);
+    }
+    
+    .jugador.selected{
+        filter: drop-shadow(0px 8px 8px rgba(75, 45, 243, 0.9));
+    }
+    
+    #temporizador-container{
+        bottom: 68%;
+        right: auto;
+        background-color: var(--color-acento-oscuro);
+        padding: 0px;
+    }
+    
+    #replay{
+        bottom: -11%;
+        left: 45%;
+        cursor: pointer;
+        background-color: var(--color-acento-oscuro);
+        padding: 0px;
+    }
+    
+    .info-ganador{
+        display: flex;
+        width: 35%;
+        justify-content: space-around;
+    }
+    
+    .info-ganador h2{
+        font-size: 30px;
+    }
+    
+    #ganador{
+        filter: drop-shadow(0px 0px 5px rgba(255, 255, 0, 0.85));
+    }
+    
+    .opciones-juego{
+        display: flex;
+        width: inherit;
+        justify-content: space-evenly;
+        align-items: center;
+    }
+    
+    .opciones-juego img{
+        width: 100px;
+        height: 100px;
+        border-radius: 100%;
+        border: 2px solid black;
+        cursor: pointer;
+        object-fit: cover;
+    }
+    
+    .selected{
+        filter: drop-shadow(10px 10px 20px rgba(250, 78, 78, 0.9));
+    }
+    
+    .container-fichas{
+        display: flex;
+        justify-content: space-around;
+        width: inherit;
+    }
+    
+    .opciones-juego.tablero div{
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .opciones-juego.tablero img{
+        width: 200px;
+        height: 200px;
+        object-fit: cover;
+        border-radius: 20%;
+    }
+    
+    .opciones-juego.fichas{
+        width: 400px;
+        height: auto;
+    }
+    
+    .btn-jugar{
+        cursor: pointer;
+    }
+
+    .btn-jugar:hover{
+        transform: scale(1.2);
+        filter: drop-shadow(10px 10px 20px rgba(243, 45, 45, 0.9));
+        transition: .3s ease;
+    }
+
+    .container-btn-titulo{
+        display: flex;
+        width: inherit;
+        height: inherit;
+        align-items: center;
+        justify-content: space-between;
+    }
+    
+    .container-btn-titulo h1{
+        color: white;
+        margin-left: 5%;
+        text-shadow: none;
+    }
+    
+    .botones-juegos{
+        height: 100%;
+        width: fit-content;
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        margin-right: 5%;
+    }
+    
+    .botones-juegos button{
+        margin-left: 10px;
+        display: flex;
+        align-items: center;
+    }
+    
+    .juego-container{
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .juego-container section{
+        margin-bottom: 20px;
+    }
+    .container.juego{
+        display: flex;
+        flex-direction: column;
+        height: min-content;
+        margin-left: 236px;
+        margin-right: 236px;
+    }
+
+    p.info{
+        font-size: var(--font-size-s);
     }
 }

@@ -1,251 +1,338 @@
-import { Jugador } from "./Jugador.js";
-
-export class Tablero {
-    constructor(width, height, nEnLinea) {
-        this.width = width / 2;
-        this.height = height / 2;
-        this.x = (width - this.width) / 2;
-        this.y = (height - this.height) / 2;
-        this.rows = nEnLinea + 2;
-        this.cols = nEnLinea + 3;
-        this.nEnLinea = nEnLinea;
-        this.cellRadius = this.width / (this.cols * 4);
-        this.cellSpacingX = this.cellRadius;
-        this.cellSpacingY = this.cellRadius / 2;
-        this.desplazamientoX = this.x + (this.width - (this.cols * (this.cellRadius * 2 + this.cellSpacingX))) / 2;
-        this.desplazamientoY = this.y + (this.height - (this.rows * (this.cellRadius * 2 + this.cellSpacingY))) / 2;
-
-        this.boardState = Array.from({ length: this.rows }, () => Array(this.cols).fill(null));
-
-        this.backgroundImage = new Image();
-        this.backgroundImage.src = "fondo.jpg";
-        this.backgroundImage.onload = () => {
-            this.backgroundLoaded = true;
-        };
+class Tablero {
+    constructor(canvas, ctx, cantFichasGan) {
+      this.cantFichasGan=cantFichasGan;
+      this.canvas=canvas;
+      this.ctx=ctx;
+      this.filas=this.setFilas(cantFichasGan);
+      this.columnas=this.setColumnas(cantFichasGan);
+      this.tablero =  this.crearMatriz();
+  
+      //Alto y ancho del canvas
+      this.canvasWidth = this.canvas.width;
+      this.canvasHeight = this.canvas.height;
+      
+      // Ajustamos el ancho y alto del rectángulo al 60% y 80% del tamaño del canvas, respectivamente
+      this.rectWidth = 0.6 * this.canvasWidth;
+      this.rectHeight = 0.8 *this.canvasHeight;
+      
+      // Calculamos el padding para centrar el rectángulo
+      this.paddingX = (this.canvasWidth - this.rectWidth) / 2;
+      this.paddingY = (this.canvasHeight - this.rectHeight) / 2;
+      
+      // Calculamos el ancho y alto de cada celda
+      this.cellWidth = this.rectWidth / this.filas;
+      this.cellHeight = this.rectHeight / this.columnas;
+      
+  
+      //traemos la imagen de fondo del tablero, cuando cargue, se dibuja
+      this.fondoCargado=false;
+      this.fondo=new Image();
+      this.fondo.src = "./fondo.jpg";
+      this.fondo.onload=()=>{
+        this.fondoCargado=true;
+        this.dibujar();
+      }
+  
+      this.startGame();
     }
-
-    dibujarHuecos(ctx, highlightCol) {
-        if (this.backgroundLoaded) {
-            const padding = 5;
-            ctx.drawImage(
-                this.backgroundImage,
-                this.x + padding,
-                this.y + padding,
-                this.width - padding * 2,
-                this.height - padding * 2
-            );
-        } else {
-            ctx.fillStyle = "#ADD8E6";
-            ctx.fillRect(this.x, this.y, this.width, this.height);
+  
+    //se crea la matriz base, estructura que se utilizará para verificaciones e inserciones
+    crearMatriz() {
+      let matriz = [];
+      for (let i = 0; i < this.filas+1; i++) {
+          matriz[i] = [];
+          for (let j = 0; j < this.columnas; j++) {
+              matriz[i][j] ={
+                "ficha": new Ficha('base', this.cantFichasGan, ""),
+                "x":0,
+                "y":0
+              };
+          }
+      }
+      return matriz;
+    }
+  
+    //llena el tablero de las fichas "vacias"
+    startGame() {
+      for (let i = 0; i < this.filas; i++) {
+        for (let j = 0; j < this.columnas; j++) {
+          this.tablero[i][j].ficha = new Ficha('base', this.cantFichasGan, "");
         }
-
-        // Ajustamos los huecos un poco más abajo
-        const huecoDesplazamientoY = 10;
-        for (let row = 0; row < this.rows; row++) {
-            for (let col = 0; col < this.cols; col++) {
-                let PosX = this.desplazamientoX + col * (this.cellRadius * 2 + this.cellSpacingX) + this.cellSpacingX * 1.5;
-                let posY = this.desplazamientoY + row * (this.cellRadius * 2 + this.cellSpacingY) + huecoDesplazamientoY;
-
-                if (highlightCol === col && this.boardState[row][col] == null) {
-                    ctx.fillStyle = "#FFFF00";
-                } else if (this.boardState[row][col] === 1) {
-                    ctx.fillStyle = "#FF0000";
-                } else if (this.boardState[row][col] === 2) {
-                    ctx.fillStyle = "#0000FF";
-                } else {
-                    ctx.fillStyle = "#D9D9D9";
+      }
+      this.dibujar();
+    }
+  
+    //dibujamos el tablero
+    dibujar() {
+      this.ctx.fillStyle = "rgb(54, 54, 54)";
+      this.ctx.fillRect(this.paddingX, this.paddingY, this.rectWidth, this.rectHeight);
+  
+      //se verifica nuevamente si el fondo está cargado
+      if(this.fondo.complete){
+        this.ctx.drawImage(this.fondo,this.paddingX,this.paddingY,this.rectWidth,this.rectHeight);
+      }
+  
+      for (let i = 0; i < this.filas; i++) {
+        for (let j = 0; j < this.columnas; j++) {
+          // Calculamos la posición de cada celda, centrando cada ficha dentro de su celda
+          const x = this.paddingX + (this.cellWidth * i) + (this.cellWidth / 2);
+          const y = this.paddingY + this.rectHeight - (this.cellHeight * j) - (this.cellHeight / 2);
+          
+          //dibujamos los espacios para las fichas
+          this.tablero[i][j].ficha.dibujar(this.ctx, x, y);
+          this.tablero[i][j].x=x;
+          this.tablero[i][j].y=y; 
+        }
+      }
+    }
+  
+    getX(fila, columna){
+      return this.tablero[fila][columna].x;
+    }
+   
+    //la funcion add se fija que la posicion donde queres soltar la ficha corresponda a una columna y a cual
+    add(x, y,ficha){
+  
+      let columna=0;
+      let j=0;
+      while(columna<this.columnas-1 && !(x>this.paddingX+j*this.cellWidth && x<=this.paddingX+(j+1)*this.cellWidth)){
+        columna++;
+        j++;
+      }
+      
+      
+      for (let i = 0; i < this.tablero.length; i++) {
+        if(columna==this.columnas-1){
+          this.tablero[i][j].ficha.borrar(this.ctx, x, y);
+        }else{
+          if (this.tablero[columna][i].ficha.getNombre() == 'base') {
+            this.tablero[columna][i].ficha = ficha;
+            return true;
+          }
+        }
+      }
+      return false;
+    }
+     
+    getColumnas(){
+      return this.columnas;
+    }
+    getPaddingX(){
+      return this.paddingX;
+    }
+    getCellWidth(){
+      return this.cellWidth;
+    }
+    // la funcion gane se encarga de la verificacion una vez que la ficha está posicionada
+    gane(ultimo){
+      var fichasGanadoras = [];
+      var actual;
+      var verticalActual;
+      var horizontalActual;
+  
+      for (var i = 0; i < this.filas; i++) {
+        for (var j = 0; j < this.columnas; j++) {
+  
+          // si estoy parado en una ficha del tipo q quiero buscar
+          if (ultimo.getNombre() == this.tablero[i][j].ficha.getNombre()) { 
+  
+            // validacion vertical
+            actual = this.tablero[i][j].ficha;
+            fichasGanadoras.push(actual);
+            verticalActual = j;
+  
+            if ((verticalActual+1) < this.filas) {
+              while(actual.getNombre()==this.tablero[i][verticalActual+1].ficha.getNombre()){
+                verticalActual++;
+                fichasGanadoras.push(this.tablero[i][verticalActual].ficha);
+                if (fichasGanadoras.length == this.cantFichasGan) {
+                  return fichasGanadoras;
                 }
-
-                ctx.beginPath();
-                ctx.arc(PosX, posY, this.cellRadius, 0, Math.PI * 2);
-                ctx.fill();
-                ctx.closePath();
+                actual = this.tablero[i][verticalActual].ficha;
+              }
             }
-        }
-
-        this.dibujarEjes(ctx);
-    }
-
-
-        
-
-    obtenerColumnaDesdeMouse(x) {
-        const columnaRelativa = (x - this.desplazamientoX - this.cellRadius) / (2 * this.cellRadius + this.cellSpacingX);
-        const columna = Math.round(columnaRelativa);
-        return (columna >= 0 && columna < this.cols) ? columna : -1;
-    }
-
-    dibujarEjes(ctx){
-        let colCentralX = (this.x + this.width / 2)
-        let colCentralY = (this.y + this.height / 2)
-
-        // Eje Y
-        ctx.beginPath();
-        ctx.moveTo(colCentralX, this.y);
-        ctx.lineTo(colCentralX, this.y + this.height)
-        ctx.stroke();
-        ctx.closePath();
-
-        // Eje X
-        ctx.beginPath();
-        ctx.moveTo(this.x, colCentralY);
-        ctx.lineTo(this.x + this.width, colCentralY)
-        ctx.stroke();
-        ctx.closePath();
-    }
-
-    dibujarFlechas(ctx) {
-        ctx.fillStyle = "#FFC107";
-        const arrowSize = this.cellRadius * 1.2;
-        const flechaDesplazamientoY = 15; // Ajuste para que las flechas estén más arriba
-        for (let col = 0; col < this.cols; col++) {
-            let posX = this.desplazamientoX + col * (this.cellRadius * 2 + this.cellSpacingX) + this.cellSpacingX * 1.5;
-            let posY = this.desplazamientoY - arrowSize * 2 - flechaDesplazamientoY;
-
-            ctx.beginPath();
-            ctx.moveTo(posX - arrowSize / 2, posY);
-            ctx.lineTo(posX, posY + arrowSize);
-            ctx.lineTo(posX + arrowSize / 2, posY);
-            ctx.fill();
-            ctx.closePath();
-        }
-    }
-
-    agregarFicha(ctx, col, turno){
-        for (let row = this.rows - 1; row >= 0; row--) {
-            if (this.boardState[row][col] === null) {
-                // Marca la posición con una ficha (en este caso, de color rojo)
-                this.boardState[row][col] = turno.numero;
-
-                if(this.verificarGanador() != null){
-                    alert("Ganaste: " + turno.nombre);
-                    this.reiniciarTablero(this.boardState);
-                }
-                
-                // Vuelve a dibujar el tablero con la nueva ficha
-                this.dibujarHuecos(ctx);
-                return; // Termina el método después de colocar la ficha
+            fichasGanadoras = [];
+            //no encontro nada verticalmente
+  
+            //validacion horizontal
+            actual = this.tablero[i][j].ficha;
+            fichasGanadoras.push(actual);
+            horizontalActual = i;
+            fichasGanadoras=this.validacionHorizontal(horizontalActual, actual, j, fichasGanadoras);
+            if(fichasGanadoras.length==this.cantFichasGan){
+              return fichasGanadoras;
             }
-        }
-    }
-
-    reiniciarTablero(matriz){
-        for (const element of matriz) {
-            element.fill(null);
-        }
-    }
-
-    verificarGanador(){
-        let horizontal = this.verificarGanadorHorizontal();
-
-        if(horizontal!=null){
-            return horizontal
-        }
-
-        let vertical = this.verificarGanadorVertical();        
-
-        if(vertical!=null){
-            return vertical
-        }
-
-        let diagonal = this.verificarGanadorDiagonal();
-        
-        if(diagonal!=null){
-            return diagonal
-        }
-    }
-
-    verificarGanadorHorizontal() {
-        for (let i = 0; i < this.boardState.length; i++) {
-            for (let j = 0; j < this.boardState[i].length; j++) {
-                let cont = 1;  // Resetear el contador por fila
-                let huecoActual = this.boardState[i][j];
-                let siguiente = this.boardState[i][j+1];
-                let k = 1;
-                while(huecoActual != null && huecoActual == siguiente && j + k < this.boardState[i].length){ 
-                    if (cont >= this.nEnLinea) return huecoActual;
-                    cont++;
-                    huecoActual = siguiente;
-                    siguiente = this.boardState[i][j+1+k];
-                    k++;
-                }
-                if (cont >= this.nEnLinea) {
-                    return huecoActual;
-                }
+         
+            fichasGanadoras = [];
+            //no encontro nada horizontalmente
+  
+  
+            //validacion diagonal arriba
+            actual = this.tablero[i][j].ficha;
+            fichasGanadoras.push(actual);
+            horizontalActual = i;
+            verticalActual = j;
+            fichasGanadoras=this.validacionDiagonalArriba(horizontalActual, verticalActual, actual, fichasGanadoras);
+            if(fichasGanadoras.length==this.cantFichasGan){
+              return fichasGanadoras;
             }
-        }
-        return null; // No hay ganador
-    }
-    
-
-    verificarGanadorVertical() {
-        for (let j = 0; j < this.cols; j++) {  // Cambiado para recorrer las columnas primero
-            for (let i = 0; i < this.rows; i++) {
-                let cont = 1;
-                let huecoActual = this.boardState[i][j];
-    
-                // Solo comprobamos si hay un valor en la posición actual
-                if (huecoActual != null) {
-                    for (let k = 1; k < this.nEnLinea; k++) { 
-                        // Verificamos si estamos dentro de los límites
-                        if (i + k < this.rows && huecoActual === this.boardState[i + k][j]) {
-                            cont++;
-                        } else {
-                            break;  // Salimos del loop si no coinciden o alcanzamos el borde
-                        }
-    
-                        // Si alcanzamos la cantidad necesaria, retornamos el ganador
-                        if (cont === this.nEnLinea) {
-                            return huecoActual;
-                        }
-                    }
-                }
+         
+            fichasGanadoras = [];
+            //no encontro nada en diagonal arriba
+  
+            //validacion diagonal abajo
+            actual = this.tablero[i][j].ficha;
+            fichasGanadoras.push(actual);
+            horizontalActual = i;
+            verticalActual = j;
+  
+            while((((horizontalActual+1) < this.columnas-1) && ((verticalActual-1) > -1)) && actual.getNombre()==this.tablero[horizontalActual+1][verticalActual-1].ficha.getNombre()){
+              horizontalActual++;
+              verticalActual--;
+              fichasGanadoras.push(this.tablero[horizontalActual][verticalActual].ficha);
+              if (fichasGanadoras.length == this.cantFichasGan) {
+                return fichasGanadoras;
+              }
+              actual = this.tablero[horizontalActual][verticalActual].ficha;
             }
+            fichasGanadoras = [];
+            //no encontro nada en diagonal arriba
+  
+          }
         }
-        return null; // No hay ganador
+      }
+      return fichasGanadoras;
     }
-    
-    
-
-    verificarGanadorDiagonal() {
-        // Diagonales (de arriba-izquierda a abajo-derecha)
-        for (let row = 0; row <= this.rows - this.nEnLinea; row++) {
-            for (let col = 0; col <= this.cols - this.nEnLinea; col++) {
-                let cont = 1;
-                let huecoActual = this.boardState[row][col];
-                let k = 1;
-                
-                while (huecoActual != null && k < this.nEnLinea && this.boardState[row + k][col + k] == huecoActual) {
-                    cont++;
-                    k++;
-                }
-                
-                if (cont >= this.nEnLinea) {
-                    console.log("Ganador encontrado (arriba-izquierda a abajo-derecha)");
-                    return huecoActual;
-                }
-            }
+  
+    //verifica si las fichas acumuladas, horizontalmente, son de la cantidad de fichas para ganar
+    validacionHorizontal(horizontalActual, actual, j, fichasGanadoras){
+      
+      while(((horizontalActual+1) < this.columnas-1) && actual.getNombre()==this.tablero[horizontalActual+1][j].ficha.getNombre()){
+        horizontalActual++;
+        fichasGanadoras.push(this.tablero[horizontalActual][j].ficha);
+        if (fichasGanadoras.length == this.cantFichasGan) {
+          return fichasGanadoras;
         }
-    
-        // Diagonales (de arriba-derecha a abajo-izquierda)
-        for (let row = 0; row <= this.rows - this.nEnLinea; row++) {
-            for (let col = this.nEnLinea - 1; col < this.cols; col++) {
-                let cont = 1;
-                let huecoActual = this.boardState[row][col];
-                let k = 1;
-                
-                while (huecoActual != null && k < this.nEnLinea && this.boardState[row + k][col - k] == huecoActual) {
-                    cont++;
-                    k++;
-                }
-                
-                if (cont >= this.nEnLinea) {
-                    console.log("Ganador encontrado (arriba-derecha a abajo-izquierda)");
-                    return huecoActual;
-                }
-            }
-        }
-    
-        return null; // No hay ganador
+        actual = this.tablero[horizontalActual][j].ficha; 
+      }
+      return fichasGanadoras;
     }
-}
+  
+      //verifica si las fichas acumuladas, vertical y diagonal hacia arriba, son de la cantidad de fichas para ganar
+    validacionDiagonalArriba(horizontalActual, verticalActual, actual, fichasGanadoras){
+      while((((horizontalActual+1) < this.columnas-1) && ((verticalActual+1) < this.filas))&& actual.getNombre()==this.tablero[horizontalActual+1][verticalActual+1].ficha.getNombre()){
+        //se mueve una ficha adelante y, una ficha arriba
+        horizontalActual++;
+        verticalActual++;
+        fichasGanadoras.push(this.tablero[horizontalActual][verticalActual].ficha);
+        if (fichasGanadoras.length == this.cantFichasGan) {
+          return fichasGanadoras;
+        }
+        actual = this.tablero[horizontalActual][verticalActual].ficha;
+      }
+      return fichasGanadoras;
+    }
+  
+    //verifica sobre que conjunto de fichas se soltó la del jugador
+    obtenerFilaDeLlegada(x){
+  
+      let columna=0;
+      let j=0;
+      while(columna<this.columnas-1 && !(x>this.paddingX+j*this.cellWidth && x<=this.paddingX+(j+1)*this.cellWidth)){
+        columna++;
+        j++;
+      }
+      
+      //comprobamos que el lugar esté vacío
+      if(columna!=this.columnas-1){
+        for (let u = 0; u < this.tablero.length; u++) {
+          if (this.tablero[columna][u].ficha.getNombre() == 'base') {
+            return u;
+          }
+        }
+      }
+      return -1;
+    }
+  
+    //dibuja la pila de fichas de cada jugador
+    dibujarPila(j1, j2, modo){
+      //sobre que lado se dibujarán, dependiendo el juegador
+      let j1x=110;
+      let j2x=this.canvasWidth-110;
+  
+      //hasta donde llegarán las fichas
+      let y=600;
+  
+      for(let i=0; i<=20; i++){
+        //por cada ficha dibujada, se dibuja otra, un poco mas arriba
+        y-=20;
+        new Ficha(j1, modo, j1.avatar).dibujar(this.ctx, j1x, y)
+        new Ficha(j2, modo, j2.avatar).dibujar(this.ctx, j2x, y);
+      }
+    }
+  
+  
+    //muestra las guias visuales para insertar una ficha
+    mostrarGuia() {
+      for (let columna = 0; columna < this.columnas-1; columna++) {
+  
+        //determina la posicion donde estara la guia
+        let x = this.paddingX + columna * this.cellWidth + this.cellWidth / 2; 
+        let y = 40; 
+  
+        //se dibuja la guia, simulando una sombra
+        let gradient = this.ctx.createRadialGradient(x, y, 5, x, y, this.cellWidth / 2);
+        gradient.addColorStop(0, 'rgba(255, 70, 65, 0.9)'); 
+        gradient.addColorStop(1, 'rgba(255, 70, 65, 0)'); 
+  
+        this.ctx.fillStyle = gradient;
+        this.ctx.beginPath();
+        this.ctx.arc(x, y, this.cellWidth / 2, 0, Math.PI * 2);
+        this.ctx.fill();
+      }
+    }
+  
+  
+    //dependiendo el modo, determina cuantas filas se usarán para el tablero
+    setFilas(modo){
+      let filas;
+  
+      switch(modo){
+        case 5: 
+          filas=7;
+          break;
+        case 6:
+          filas=8;
+          break;
+        case 7:
+          filas=9;
+          break;
+        default:
+          filas=6
+      }
+  
+      return filas
+    }
+  
+  
+    //dependiendo el modo, determina cuantas columnas se usarán para el tablero
+    setColumnas(modo){
+      let columnas;
+  
+      switch(modo){
+        case 5: 
+          columnas=8;
+          break;
+        case 6:
+          columnas=9;
+          break;
+        case 7:
+          columnas=10;
+          break;
+        default:
+          columnas=7
+      }
+      return columnas
+    }
+  
+  }
