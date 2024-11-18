@@ -138,18 +138,16 @@ h1, h2, h3, h4, h5,h6, p, a, span{
 
 /* VJ - CONTENIDOS RELACIONADOS */
 
-.card-contenido-div:nth-child(2){
-    margin-top: 16px;
+.contenido-section{
+    background-color: var(--color-primario);
+    padding: 8px 0px;
+    border-radius: 8px;
 }
 
 .card-contenido-texto-div{
     display: flex;
     flex-direction: column;
     justify-content: space-around;
-}
-
-.card-contenido-texto-div p{
-    text-align: center;
 }
 
 .container-button{
@@ -197,22 +195,19 @@ h1, h2, h3, h4, h5,h6, p, a, span{
     border-radius: 8px;
 }
 
-.card-contenido-img-div{
-    width: 35%;
+.card-contenido-img-div :nth-child(2){
+    margin-left: 8px;
+    margin-right: 8px;
 }
 
 .card-contenido-img-div img{
     width: 100%;
     height: 100%;
-    border-radius: 8px 0px 0px 8px;
+    border-radius: 4px;
     object-fit: cover;
 }
 
-.card-contenido-texto-div{
-    padding: 8px;
-}
-
-.card-contenido-texto-div h3{
+.card-contenido-div-titulo h3{
     text-align: center;
 }
 
@@ -243,7 +238,6 @@ h1, h2, h3, h4, h5,h6, p, a, span{
 .container-titulo-foro span{
     margin-right: 4px;
 }
-
 
 .foto-perfil{
     width: 50px;
@@ -1273,6 +1267,13 @@ h2.titulo-vj{
 
     .card-contenido-img-div{
         width: 35%;
+        margin-left: 8px;
+        margin-right: 8px;
+    }
+
+    .card-contenido-img-div:nth-child(2){
+        margin-left: 0px;
+        margin-right: 0px;
     }
 
     .card-contenido-texto-div{
@@ -1483,8 +1484,15 @@ h2.titulo-vj{
         font-size: var(--font-size-xxs);
     }
 
-    .card-contenido-div:nth-child(2){
-        margin-top: 16px;
+    .contenido-section{
+        width: 80%;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .card-contenido-img-div :nth-child(2){
+        margin-right: 8px;
+        margin-left: 8px;
     }
 
     .description-div p {
@@ -1492,11 +1500,6 @@ h2.titulo-vj{
     }
 
     .description-div{
-        width: 80%;
-        margin: 0px auto;
-    }
-
-    .card-contenido-div{
         width: 80%;
         margin: 0px auto;
     }
@@ -1553,7 +1556,7 @@ h2.titulo-vj{
         font-size: var(--font-size-xs);
     }
 
-    .card-contenido-texto-div h3{
+    .card-contenido-div-titulo h3{
         font-size: var(--font-size-m);
     }
 
@@ -1683,7 +1686,7 @@ h2.titulo-vj{
         font-size: var(--font-size-m);
     }
 
-    .card-contenido-texto-div h3{
+    .card-contenido-div-titulo h3{
         font-size: var(--font-size-l);
     }
 
